@@ -89,7 +89,7 @@ export class EDAAppStack extends cdk.Stack {
         displayName: "Image Metadata Topic",
       });
   
-      const adddataFn = new lambdanode.NodejsFunction(this, "adddataFn", {
+      const adddataFn = new lambdanode.NodejsFunction(this, "add_dataFn", {
         runtime: lambda.Runtime.NODEJS_22_X,
         memorySize: 128,
         timeout: Duration.seconds(5),
