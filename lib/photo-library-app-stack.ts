@@ -93,7 +93,7 @@ export class EDAAppStack extends cdk.Stack {
         runtime: lambda.Runtime.NODEJS_22_X,
         memorySize: 128,
         timeout: Duration.seconds(5),
-        entry: `${__dirname}/../lambdas/adddata.ts`,
+        entry: `${__dirname}/../lambdas/add_data.ts`,
         environment: {
           TABLE_NAME: imagesTable.tableName,
         },
