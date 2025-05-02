@@ -8,6 +8,7 @@ import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { Construct } from "constructs";
+import * as subs from "aws-cdk-lib/aws-sns-subscriptions";
 
 export class EDAAppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
