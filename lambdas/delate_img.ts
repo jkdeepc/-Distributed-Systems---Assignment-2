@@ -9,7 +9,7 @@ export const handler: SQSHandler = async (event) => {
     const s3Info = body.Records?.[0]?.s3; 
 
     if (!s3Info) {
-      console.log("Invalid S3 info");
+      console.log("wrong Bucket S3 info");
       continue;
     }
 
