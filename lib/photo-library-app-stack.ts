@@ -110,6 +110,54 @@ export class EDAAppStack extends cdk.Stack {
           },
         })
       );
+      const statusTopic = new sns.Topic(this, "StatusTopic", {
+        displayName: "Review Topic Status ",
+      });
+  
+      const notifyTopic = new sns.Topic(this, "NotifyTopic", {
+        displayName: "Notice Photographer Topic",
+      });
+  
+      const updateStatusFn = new lambdanode.NodejsFunction(this, "updateStatusFn", {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        memorySize: 128,
+        timeout: Duration.seconds(5),
+        entry: `${__dirname}/../lambdas/update_data.ts`,
+        environment: {
+          TABLE_NAME: imagesTable.tableName,
+          STATUS_NOTIFY_TOPIC_ARN: notifyTopic.topicArn,
+        },
+      });
+  
+      imagesTable.grantWriteData(updateStatusFn);
+      statusTopic.grantPublish(updateStatusFn);
+      notifyTopic.grantPublish(updateStatusFn);
+  
+      statusTopic.addSubscription(new subs.LambdaSubscription(updateStatusFn));
+  
+      const notifyPhotographerFn = new lambdanode.NodejsFunction(this, "notifyFn", {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        memorySize: 128,
+        timeout: Duration.seconds(5),
+        entry: `${__dirname}/../lambdas/notify_info.ts`,
+        environment: {
+          FROM_EMAIL: "FROM_EMAIL",
+          TO_EMAIL: "TO_EMAIL",
+        },
+      });
+  
+      notifyPhotographerFn.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ["ses:SendEmail", "ses:SendRawEmail"],
+          resources: ["*"],
+        })
+      );
+  
+      notifyTopic.addSubscription(new subs.LambdaSubscription(notifyPhotographerFn));
+  
+      new cdk.CfnOutput(this, "statusTopicArn", {
+        value: statusTopic.topicArn,
+      });
   
       new cdk.CfnOutput(this, "dataTopicArn", {
         value: dataTopic.topicArn,
